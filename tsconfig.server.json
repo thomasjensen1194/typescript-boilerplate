@@ -13,7 +13,10 @@
     /* Module Resolution Options */
     "moduleResolution": "node",
     "baseUrl": "./src",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    /* TypeORM */
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   },
   "include": ["./server/**/*"]
 }

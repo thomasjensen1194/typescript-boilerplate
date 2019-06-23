@@ -1,7 +1,11 @@
 import express from "express";
+import "reflect-metadata";
+import apollo from "./graphql/apolloServer";
+import "./typeORM/typeORM";
+const app = express();
 const PORT = process.env.PORT || 3001;
 
-const app = express();
+apollo.applyMiddleware({ app });
 
 app.get("/", (req, res) => {
   res.send("Hello World");
