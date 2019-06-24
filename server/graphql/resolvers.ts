@@ -38,11 +38,14 @@ const resolvers = {
 
       const isValid = await bcrypt.compare(password, user.password);
 
-      if (isValid)
+      if (isValid) {
         return jwt.sign(
           { username: user.username, id: user.id, email: user.email },
           secret
         );
+      } else {
+        throw new Error("Incorrect username or password");
+      }
     }
   }
 };

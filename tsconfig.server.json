@@ -12,11 +12,11 @@
     "alwaysStrict": true,
     /* Module Resolution Options */
     "moduleResolution": "node",
-    "baseUrl": "./src",
+    "baseUrl": "server",
     "esModuleInterop": true,
     /* TypeORM */
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
-  "include": ["./server/**/*"]
+  "include": ["server"]
 }

@@ -4,11 +4,24 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter } from "react-router-dom";
+import { configureStore } from "redux-starter-kit";
+import { Provider } from "react-redux";
+
+import authReducer from "./redux/reducers/auth";
+
+const store = configureStore({
+  reducer: {
+    auth: authReducer
+  },
+  devTools: process.env.NODE_ENV === "production" ? false : true
+});
 
 ReactDOM.render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>,
+  <Provider store={store}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Provider>,
   document.getElementById("root")
 );
 
