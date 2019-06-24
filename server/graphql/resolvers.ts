@@ -12,7 +12,7 @@ const resolvers = {
   },
 
   Mutation: {
-    createUser: async (obj, { username, password, email }, cts, info) => {
+    createUser: async (obj, { username, password, email }, ctx, info) => {
       const user = new User();
       const saltedPassword = await bcrypt.hash(password, 10);
 
@@ -22,9 +22,27 @@ const resolvers = {
 
       const newUser = await getRepository(User).save(user);
 
-      console.log(newUser);
+      return jwt.sign(
+        { username: newUser.username, id: newUser.id, email: newUser.email },
+        secret
+      );
+    },
+    login: async (obj, { username, password, email }, ctx, info) => {
+      if (!password || (!username && !email))
+        throw new Error("You must provide username/email and password");
+      let user;
+      if (username)
+        user = await getRepository(User).findOne({ username: username });
+      if (email) user = await getRepository(User).findOne({ email: email });
+      if (!user) throw new Error("User not found");
 
-      return jwt.sign(newUser, secret);
+      const isValid = await bcrypt.compare(password, user.password);
+
+      if (isValid)
+        return jwt.sign(
+          { username: user.username, id: user.id, email: user.email },
+          secret
+        );
     }
   }
 };
