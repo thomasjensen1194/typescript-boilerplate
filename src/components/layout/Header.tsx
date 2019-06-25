@@ -1,32 +1,17 @@
 import React from "react";
 import { Menu } from "semantic-ui-react";
-import { withRouter, RouteComponentProps } from "react-router-dom";
-import { useSelector } from "react-redux";
+import SubMenus from "./SubMenus";
 
-export interface HeaderProps extends RouteComponentProps<any> {}
+export interface HeaderProps {}
 
-const Header: React.SFC<HeaderProps> = ({ history }) => {
-  const user = useSelector((state: any) => state.auth.user);
-
+const Header: React.SFC<HeaderProps> = () => {
   return (
     <header>
       <Menu color="blue" inverted attached>
-        <Menu.Menu>
-          <Menu.Item onClick={() => history.push("/")}>Frontpage</Menu.Item>
-        </Menu.Menu>
-        <Menu.Menu position="right">
-          {!user && (
-            <Menu.Item onClick={() => history.push("/login")}>Login</Menu.Item>
-          )}
-          {user && (
-            <Menu.Item onClick={() => history.push("/logout")}>
-              Logout
-            </Menu.Item>
-          )}
-        </Menu.Menu>
+        <SubMenus sidebarHide={() => null} />
       </Menu>
     </header>
   );
 };
 
-export default withRouter<HeaderProps>(Header);
+export default Header;

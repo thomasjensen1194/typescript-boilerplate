@@ -16,6 +16,7 @@ import { login } from "./redux/actions/auth";
 import Logout from "./components/auth/Logout";
 import Registered from "components/auth/Registered";
 import "./App.css";
+import Layout from "components/layout/Layout";
 
 export interface AppProps extends RouteComponentProps<any> {
   user?: object;
@@ -39,14 +40,15 @@ const App: React.FC<AppProps> = ({ history, location }) => {
 
   return (
     <div>
-      <Header />
-      <Switch>
-        <Route path="/registered" component={Registered} />
-        <Route path="/register" component={Register} />
-        <Route path="/logout" component={Logout} />
-        <Route path="/login" component={Login} />
-        <Route path="/" component={Frontpage} />
-      </Switch>
+      <Layout>
+        <Switch>
+          <Route path="/registered" component={Registered} />
+          <Route path="/register" component={Register} />
+          <Route path="/logout" component={Logout} />
+          <Route path="/login" component={Login} />
+          <Route path="/" component={Frontpage} />
+        </Switch>
+      </Layout>
     </div>
   );
 };

@@ -24,6 +24,7 @@ const Login: React.FC<LoginProps> = ({ history }) => {
     if (!user.username || !user.password) {
       return setErrorMessage("Please provide all fields");
     }
+
     try {
       const { data: jwt } = await client.mutate({
         mutation: LOGIN,
@@ -33,6 +34,7 @@ const Login: React.FC<LoginProps> = ({ history }) => {
           email: user.email
         }
       });
+
       setCookie("user", jwt.login);
       await dispatch(login(jwt.login));
       history.push("/");
