@@ -1,18 +1,8 @@
 import "reflect-metadata";
 import { createConnection } from "typeorm";
-import User from "./models/user";
+const { connection } = require("../config/index");
 
-createConnection({
-  type: "mysql",
-  host: "212.112.144.171",
-  port: 3306,
-  username: "root",
-  password: "thomasdev",
-  database: "klinikbytte",
-  entities: [User],
-  synchronize: true,
-  logging: false
-})
+createConnection(connection)
   .then(() => {
     console.log("Successfully connected to database");
   })
