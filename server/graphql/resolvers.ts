@@ -1,5 +1,4 @@
-import { getRepository } from "typeorm";
-import User from "../typeORM/models/user";
+import User from "../objection/models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 const { secret } = require("../config/index");
@@ -7,7 +6,7 @@ const { secret } = require("../config/index");
 const resolvers = {
   Query: {
     user: (obj, { id }, ctx, info) => {
-      return getRepository(User).findOne(id);
+      return User.query().findById(id);
     }
   },
 
@@ -20,7 +19,7 @@ const resolvers = {
       user.password = saltedPassword;
       user.email = email;
 
-      const newUser = await getRepository(User).save(user);
+      const newUser = await User.query().insert(user);
 
       return jwt.sign(
         { username: newUser.username, id: newUser.id, email: newUser.email },
@@ -31,9 +30,8 @@ const resolvers = {
       if (!password || (!username && !email))
         throw new Error("You must provide username/email and password");
       let user;
-      if (username)
-        user = await getRepository(User).findOne({ username: username });
-      if (email) user = await getRepository(User).findOne({ email: email });
+      if (username) user = await User.query().findOne({ username: username });
+      if (email) user = await User.query().findOne({ email: email });
       if (!user) throw new Error("User not found");
 
       const isValid = await bcrypt.compare(password, user.password);

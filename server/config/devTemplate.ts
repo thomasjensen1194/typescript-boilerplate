@@ -1,14 +1,11 @@
 module.exports = {
   secret: "supersecret",
+  client: "mysql",
   connection: {
-    type: "mysql",
     host: "",
     port: 3306,
-    username: "",
+    user: "",
     password: "",
-    database: "",
-    entities: [],
-    synchronize: true,
-    logging: false
+    database: ""
   }
 };

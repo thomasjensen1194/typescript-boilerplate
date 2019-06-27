@@ -1,8 +1,7 @@
 import express from "express";
-import "reflect-metadata";
 import apollo from "./graphql/apolloServer";
 import helmet from "helmet";
-import "./typeORM/typeORM";
+import "./objection/objection";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
