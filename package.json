@@ -28,6 +28,7 @@
     "typescript": "3.5.2"
   },
   "scripts": {
+    "start": "node build/server/server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "client": "react-scripts start",
     "build": "react-scripts build && npm run build-server",
