@@ -1,7 +1,7 @@
 # Stack
 
 - Node Express
-  - typeORM (connected to mySQL)
+  - objectionJs (connected to mySQL)
   - apollo-server (graphql)
   - JsonWebToken (authentication)
 - React
