@@ -1,6 +1,7 @@
 import express from "express";
 import apollo from "./graphql/apolloServer";
 import helmet from "helmet";
+import path from "path";
 import "./objection/objection";
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -14,6 +15,8 @@ app.get("*", function(req, res) {
   res.sendFile(path.join(__dirname, "..", "index.html"));
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+module.exports = server;

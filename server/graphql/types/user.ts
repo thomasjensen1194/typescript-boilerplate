@@ -1,9 +1,28 @@
-import User from "../objection/models/user";
+import { gql } from "apollo-server-express";
+import User from "../../objection/models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-const { secret } = require("../config/index");
+const { secret } = require("../../config/index");
 
-const resolvers = {
+export const typeDefs = gql`
+  extend type Query {
+    user(id: Int): User
+  }
+
+  extend type Mutation {
+    createUser(username: String!, password: String!, email: String!): String
+    login(username: String, password: String!, email: String): String
+  }
+
+  type User {
+    id: Int!
+    username: String!
+    password: String!
+    email: String!
+  }
+`;
+
+export const resolvers = {
   Query: {
     user: (obj, { id }, ctx, info) => {
       return User.query().findById(id);
@@ -32,7 +51,7 @@ const resolvers = {
       let user;
       if (username) user = await User.query().findOne({ username: username });
       if (email) user = await User.query().findOne({ email: email });
-      if (!user) throw new Error("User not found");
+      if (!user) throw new Error("Incorrect username or password");
 
       const isValid = await bcrypt.compare(password, user.password);
 
@@ -47,5 +66,3 @@ const resolvers = {
     }
   }
 };
-
-export default resolvers;
