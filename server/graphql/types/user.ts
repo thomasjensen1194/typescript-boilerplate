@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import User from "../../objection/models/user";
+import User from "../../objection/models/users";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 const { secret } = require("../../config/index");

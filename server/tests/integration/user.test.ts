@@ -1,14 +1,14 @@
-import User from "../../objection/models/user";
-import request from "supertest";
+import User from '../../objection/models/users';
+import request from 'supertest';
 let server: any;
 
-let username = "abc";
-let password = "123";
-let email = "a@a.com";
+let username = 'abc';
+let password = '123';
+let email = 'a@a.com';
 
 const createUser = async () => {
   const result = await request(server)
-    .post("/graphql")
+    .post('/graphql')
     .send({
       query: `
       mutation {
@@ -20,9 +20,9 @@ const createUser = async () => {
   return result;
 };
 
-describe("user", () => {
+describe('user', () => {
   beforeEach(async () => {
-    server = require("../../server");
+    server = require('../../server');
     const result = await createUser();
 
     expect(result.text).not.toMatch(/error/);
@@ -33,10 +33,10 @@ describe("user", () => {
     server.close();
   });
 
-  describe("GET", () => {
-    it("should login a valid user", async () => {
+  describe('GET', () => {
+    it('should login a valid user', async () => {
       const result = await request(server)
-        .post("/graphql")
+        .post('/graphql')
         .send({
           query: `
             mutation {
@@ -47,11 +47,11 @@ describe("user", () => {
 
       expect(result.text).not.toMatch(/error/);
     });
-    it("should throw an error if password is not correct", async () => {
-      let password = "notcorrect";
+    it('should throw an error if password is not correct', async () => {
+      let password = 'notcorrect';
 
       const result = await request(server)
-        .post("/graphql")
+        .post('/graphql')
         .send({
           query: `
           mutation {
@@ -62,11 +62,11 @@ describe("user", () => {
 
       expect(result.text).toMatch(/Incorrect username or password/);
     });
-    it("should throw an error, if password is not provided", async () => {
-      let password = "";
+    it('should throw an error, if password is not provided', async () => {
+      let password = '';
 
       const result = await request(server)
-        .post("/graphql")
+        .post('/graphql')
         .send({
           query: `
           mutation {
@@ -75,15 +75,13 @@ describe("user", () => {
         `
         });
 
-      expect(result.text).toMatch(
-        /You must provide username\/email and password/
-      );
+      expect(result.text).toMatch(/You must provide username\/email and password/);
     });
-    it("should throw an error, if username is not provided", async () => {
-      let username = "";
+    it('should throw an error, if username is not provided', async () => {
+      let username = '';
 
       const result = await request(server)
-        .post("/graphql")
+        .post('/graphql')
         .send({
           query: `
           mutation {
@@ -92,15 +90,13 @@ describe("user", () => {
         `
         });
 
-      expect(result.text).toMatch(
-        /You must provide username\/email and password/
-      );
+      expect(result.text).toMatch(/You must provide username\/email and password/);
     });
     it("should throw an error, if user doesn't exist", async () => {
-      let username = "wrongusername";
+      let username = 'wrongusername';
 
       const result = await request(server)
-        .post("/graphql")
+        .post('/graphql')
         .send({
           query: `
           mutation {
@@ -112,9 +108,9 @@ describe("user", () => {
       console.log(result.text);
       expect(result.text).toMatch(/Incorrect username or password/);
     });
-    it("should login the user, if providing email instead of username", async () => {
+    it('should login the user, if providing email instead of username', async () => {
       const result = await request(server)
-        .post("/graphql")
+        .post('/graphql')
         .send({
           query: `
           mutation {

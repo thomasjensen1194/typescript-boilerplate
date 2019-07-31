@@ -1,4 +1,4 @@
-import { Model } from "objection";
+import { Model } from 'objection';
 
 interface User {
   id: number;
@@ -9,7 +9,7 @@ interface User {
 }
 
 class User extends Model {
-  static tableName = "user";
+  static tableName = 'users';
 }
 
 export default User;
