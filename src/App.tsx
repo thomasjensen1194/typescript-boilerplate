@@ -14,7 +14,7 @@ import { login } from "./redux/actions/auth";
 import Logout from "./components/auth/Logout";
 import Registered from "components/auth/Registered";
 import Layout from "components/layout/Layout";
-import "./App.css";
+import "./App.scss";
 
 export interface AppProps extends RouteComponentProps<any> {
   user?: object;
@@ -51,4 +51,4 @@ const App: React.FC<AppProps> = ({ history, location }) => {
   );
 };
 
-export default withRouter<AppProps>(App);
+export default withRouter(App);
