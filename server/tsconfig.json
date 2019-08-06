@@ -12,7 +12,7 @@
     "alwaysStrict": true,
     /* Module Resolution Options */
     "moduleResolution": "node",
-    "baseUrl": "server",
+    "baseUrl": "./",
     "esModuleInterop": true,
   },
   "include": ["./**/*"]
