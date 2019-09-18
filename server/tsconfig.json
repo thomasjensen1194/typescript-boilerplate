@@ -13,7 +13,7 @@
     /* Module Resolution Options */
     "moduleResolution": "node",
     "baseUrl": "./",
-    "esModuleInterop": true,
+    "esModuleInterop": true
   },
   "include": ["./**/*"]
 }
