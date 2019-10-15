@@ -1,7 +1,8 @@
 import { gql } from 'apollo-server-express';
-import User from '../../models/users';
+import User from '../../models/user';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { Context } from 'config/apolloServer';
 
 export const typeDefs = gql`
   extend type Query {
@@ -16,7 +17,6 @@ export const typeDefs = gql`
   type User {
     id: Int!
     username: String!
-    password: String!
     email: String!
   }
 `;
@@ -62,6 +62,19 @@ export const resolvers = {
       } else {
         throw new Error('Incorrect username or password');
       }
+    }
+  },
+  User: {
+    id: ({ id }) => id,
+    username: async ({ id }, _, ctx: Context) => {
+      const user = await ctx.userLoader.load(id);
+      if (!user) return null;
+      return user.username;
+    },
+    email: async ({ id }, _, ctx: Context) => {
+      const user = await ctx.userLoader.load(id);
+      if (!user) return null;
+      return user.email;
     }
   }
 };

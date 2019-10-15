@@ -1,4 +1,7 @@
 import { ApolloServer } from 'apollo-server-express';
-import schema from 'graphql/schema';
+import { typeDefs, resolvers } from 'graphql/schema';
+import { generateLoaders } from 'graphql/dataloaders';
 
-export default new ApolloServer({ schema });
+export type Context = ReturnType<typeof generateLoaders>;
+
+export default new ApolloServer({ typeDefs, resolvers, context: () => ({ ...generateLoaders() }) });

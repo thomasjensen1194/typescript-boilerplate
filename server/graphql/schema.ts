@@ -1,6 +1,6 @@
-import { gql, makeExecutableSchema } from "apollo-server-express";
-import { merge } from "lodash";
-import { typeDefs as User, resolvers as UserResolvers } from "./types/user";
+import { gql } from 'apollo-server-express';
+import { merge } from 'lodash';
+import { typeDefs as User, resolvers as UserResolvers } from './types/user';
 
 const Query = gql`
   type Query {
@@ -11,9 +11,7 @@ const Query = gql`
   }
 `;
 
-const resolvers = {};
+const rootResolver = {};
 
-export default makeExecutableSchema({
-  typeDefs: [Query, User],
-  resolvers: merge(resolvers, UserResolvers)
-});
+export const typeDefs = [Query, User];
+export const resolvers = merge(rootResolver, UserResolvers);

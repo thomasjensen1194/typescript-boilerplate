@@ -1,4 +1,4 @@
-import User from '../../models/users';
+import User from '../../models/user';
 import request from 'supertest';
 let server: any;
 

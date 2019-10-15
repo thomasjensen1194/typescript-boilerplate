@@ -2,7 +2,9 @@ import express from 'express';
 import apollo from 'config/apolloServer';
 import helmet from 'helmet';
 import path from 'path';
+import dotenv from 'dotenv-flow';
 import './config/objection';
+dotenv.config({node_env: process.env.NODE_ENV || 'development'});
 const app = express();
 const PORT = process.env.PORT || 3001;
 
