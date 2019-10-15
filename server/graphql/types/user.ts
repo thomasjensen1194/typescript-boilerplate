@@ -6,12 +6,13 @@ import { Context } from 'config/apolloServer';
 
 export const typeDefs = gql`
   extend type Query {
-    user(id: Int): User
+    currentUser: User
   }
 
   extend type Mutation {
-    createUser(username: String!, password: String!, email: String!): String
-    login(username: String, password: String!, email: String): String
+    login(username: String!, password: String!): String
+    logout: Boolean
+    createUser: String
   }
 
   type User {
@@ -23,11 +24,10 @@ export const typeDefs = gql`
 
 export const resolvers = {
   Query: {
-    user: (obj, { id }, ctx, info) => {
-      return User.query().findById(id);
+    currentUser: (parent, args, ctx, info) => {
+      return ctx.user;
     }
   },
-
   Mutation: {
     createUser: async (obj, { username, password, email }, ctx, info) => {
       const user = new User();
@@ -44,24 +44,14 @@ export const resolvers = {
         process.env.SECRET || ''
       );
     },
-    login: async (obj, { username, password, email }, ctx, info) => {
-      if (!password || (!username && !email))
-        throw new Error('You must provide username/email and password');
-      let user;
-      if (username) user = await User.query().findOne({ username: username });
-      if (email) user = await User.query().findOne({ email: email });
-      if (!user) throw new Error('Incorrect username or password');
-
-      const isValid = await bcrypt.compare(password, user.password);
-
-      if (isValid) {
-        return jwt.sign(
-          { username: user.username, id: user.id, email: user.email },
-          process.env.SECRET || ''
-        );
-      } else {
-        throw new Error('Incorrect username or password');
-      }
+    login: async (parent, { username, passport }, ctx: Context) => {
+      ctx.passport.authenticate('jwt', (req) => {
+        console.log(req);
+        return req.user;
+      });
+    },
+    logout: async (parent, args, ctx: Context) => {
+      ctx.logout();
     }
   },
   User: {
