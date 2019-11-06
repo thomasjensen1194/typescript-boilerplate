@@ -13,7 +13,7 @@
     "helmet": "^3.18.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^2.2.0",
-    "knex": "^0.18.0",
+    "knex": "^0.19.5",
     "mysql": "^2.17.1",
     "node-sass": "^4.12.0",
     "objection": "^1.6.9",
