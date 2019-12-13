@@ -1,13 +1,13 @@
-import React from "react";
-import { Segment } from "semantic-ui-react";
+import React from 'react';
+import { LargeText, CenterText } from 'styles/text';
 
 export interface FrontpageProps {}
 
 const Frontpage: React.FC<FrontpageProps> = () => {
   return (
-    <Segment>
-      <p>This is the frontpage</p>
-    </Segment>
+    <CenterText>
+      <LargeText>This is the frontpage</LargeText>
+    </CenterText>
   );
 };
 

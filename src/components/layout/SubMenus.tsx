@@ -1,14 +1,16 @@
-import React from "react";
-import { Menu, Icon } from "semantic-ui-react";
-import { RouteComponentProps, withRouter } from "react-router";
-import { useSelector } from "react-redux";
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+import { Menu, Icon } from 'semantic-ui-react';
+import { useSelector } from 'react-redux';
+import { ReduxState } from 'redux/reducers';
 
-export interface SubMenusProps extends RouteComponentProps {
+export interface SubMenusProps {
   sidebarHide: Function;
 }
 
-const SubMenus: React.SFC<SubMenusProps> = ({ history, sidebarHide }) => {
-  const user = useSelector((state: any) => state.auth.user);
+const SubMenus: React.SFC<SubMenusProps> = ({ sidebarHide }) => {
+  const history = useHistory();
+  const user = useSelector((state: ReduxState) => state.auth.user);
 
   const handleNavigation = (url: string) => {
     history.push(url);
@@ -18,20 +20,20 @@ const SubMenus: React.SFC<SubMenusProps> = ({ history, sidebarHide }) => {
   return (
     <>
       <Menu.Menu>
-        <Menu.Item onClick={() => handleNavigation("/")}>
+        <Menu.Item onClick={() => handleNavigation('/')}>
           <Icon name="home" />
           Frontpage
         </Menu.Item>
       </Menu.Menu>
       <Menu.Menu position="right">
         {!user && (
-          <Menu.Item onClick={() => handleNavigation("/login")}>
+          <Menu.Item onClick={() => handleNavigation('/login')}>
             <Icon name="user" />
             Login
           </Menu.Item>
         )}
         {user && (
-          <Menu.Item onClick={() => handleNavigation("/logout")}>
+          <Menu.Item onClick={() => handleNavigation('/logout')}>
             <Icon name="x" />
             Logout
           </Menu.Item>
@@ -41,4 +43,4 @@ const SubMenus: React.SFC<SubMenusProps> = ({ history, sidebarHide }) => {
   );
 };
 
-export default withRouter(SubMenus);
+export default SubMenus;

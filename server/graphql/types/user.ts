@@ -1,17 +1,16 @@
 import { gql } from 'apollo-server-express';
-import User from '../../models/user';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import User from '../../models/userModel';
 import { Context } from 'config/apolloServer';
 
 export const typeDefs = gql`
   extend type Query {
-    user(id: Int): User
+    me: User
   }
 
   extend type Mutation {
-    createUser(username: String!, password: String!, email: String!): String
-    login(username: String, password: String!, email: String): String
+    createUser(data: UserInput): String
+    login(data: UserInput): String
+    logout: String
   }
 
   type User {
@@ -19,49 +18,51 @@ export const typeDefs = gql`
     username: String!
     email: String!
   }
+
+  input UserInput {
+    username: String!
+    password: String!
+    email: String!
+  }
 `;
 
 export const resolvers = {
   Query: {
-    user: (obj, { id }, ctx, info) => {
-      return User.query().findById(id);
+    me: (obj, args, ctx: Context, info) => {
+      const user = ctx.user;
+      if (!user) return null;
+
+      return User.query().findById(user.userId);
     }
   },
 
   Mutation: {
-    createUser: async (obj, { username, password, email }, ctx, info) => {
-      const user = new User();
-      const saltedPassword = await bcrypt.hash(password, 10);
+    createUser: async (obj, { data }, ctx: Context, info) => {
+      const newUser = await User.query().insertAndFetch(data);
 
-      user.username = username;
-      user.password = saltedPassword;
-      user.email = email;
-
-      const newUser = await User.query().insert(user);
-
-      return jwt.sign(
-        { username: newUser.username, id: newUser.id, email: newUser.email },
-        process.env.SECRET || ''
-      );
+      const token = newUser.signToken();
+      ctx.res.cookie('user', token);
+      return token;
     },
-    login: async (obj, { username, password, email }, ctx, info) => {
+    login: async (obj, { data }, ctx: Context, info) => {
+      const { username, password, email } = data;
       if (!password || (!username && !email))
         throw new Error('You must provide username/email and password');
-      let user;
-      if (username) user = await User.query().findOne({ username: username });
-      if (email) user = await User.query().findOne({ email: email });
-      if (!user) throw new Error('Incorrect username or password');
 
-      const isValid = await bcrypt.compare(password, user.password);
+      const user = await User.login(username, email);
+      const isValid = await user.verify(password);
 
       if (isValid) {
-        return jwt.sign(
-          { username: user.username, id: user.id, email: user.email },
-          process.env.SECRET || ''
-        );
+        const token = user.signToken();
+        ctx.res.cookie('user', token);
+        return token;
       } else {
         throw new Error('Incorrect username or password');
       }
+    },
+    logout: (root, args, ctx: Context) => {
+      ctx.res.cookie('user', {}, { expires: new Date(0) });
+      return 'Logged out';
     }
   },
   User: {

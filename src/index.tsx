@@ -1,20 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
-import { configureStore } from 'redux-starter-kit';
+import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { client as apolloClient } from './apolloClient';
-import { ApolloProvider } from 'react-apollo-hooks';
+import { ApolloProvider } from '@apollo/react-hooks';
+import rootReducer from 'redux/reducers';
+import App from './App';
+import * as serviceWorker from './serviceWorker';
+import './index.css';
 
-import authReducer from './redux/reducers/auth';
-
-const store = configureStore({
-  reducer: {
-    auth: authReducer
-  },
+export const store = configureStore({
+  reducer: rootReducer,
   devTools: process.env.NODE_ENV === 'production' ? false : true
 });
 

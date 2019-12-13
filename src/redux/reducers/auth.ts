@@ -1,18 +1,18 @@
-import { createReducer } from "redux-starter-kit";
-import * as types from "../actions/types";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import User from 'classes/User';
 
-export interface authState {
-  user?: { username: string; id: number; email: string; iat: number } | null;
-}
+const initialState = { user: null as User | null };
 
-const initialState: authState = { user: null };
-
-const authReducer = createReducer(initialState, {
-  [types.LOGIN.type]: (state, action) => {
-    state.user = action.payload.user;
-  },
-  [types.LOGOUT.type]: (state, action) => {
-    state.user = null;
+const authReducer = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    login: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+    },
+    logout: (state) => {
+      state.user = null;
+    }
   }
 });
 

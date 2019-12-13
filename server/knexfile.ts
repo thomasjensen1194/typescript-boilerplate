@@ -1,4 +1,4 @@
-require('dotenv-flow').config({ node_env: process.env.NODE_ENV || 'development', path: '../' });
+require('dotenv-flow').config({ default_node_env: 'development', path: '../' });
 
 module.exports = {
   development: {

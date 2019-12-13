@@ -1,63 +1,43 @@
 import React, { useState } from 'react';
 import { Segment, Message } from 'semantic-ui-react';
 import { Form } from 'semantic-ui-react';
-import { client } from '../../apolloClient';
-import { CREATE_USER } from '../../queries/auth';
-import { User } from '../../types/auth';
-import { useDispatch } from 'react-redux';
-import { login } from 'redux/actions/auth';
-import { RouteComponentProps } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
+import { Formik, FormikValues } from 'formik';
+import User from 'classes/User';
+import Registered from './Registered';
 
-export interface RegisterProps extends RouteComponentProps {}
+export interface RegisterProps {}
 
-const Register: React.FC<RegisterProps> = ({ history }) => {
-  const [, setCookie] = useCookies(['user']);
-  const [user, setUser] = useState({
-    username: '',
-    password: '',
-    email: '',
-    repeatPassword: ''
-  });
-  const dispatch = useDispatch();
+const Register: React.FC<RegisterProps> = () => {
+  const [registered, setRegistered] = useState(false);
+  const [registerLoading, setRegisterLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleChange = (name: keyof User | string, value: string) => {
-    setUser((prevUser) => ({ ...prevUser, [name]: value }));
-  };
-
-  const handleRegister = async () => {
+  const handleRegister = async (values: FormikValues) => {
+    const { username, password, email, repeatPassword } = values;
     // Validation
-    if (!user.email || !user.username || !user.password || !user.repeatPassword) {
+    if (!email || !username || !password || !repeatPassword) {
       return setErrorMessage('Du skal opgive alle værdier');
     }
-    if (user.password !== user.repeatPassword) {
+    if (password !== repeatPassword) {
       return setErrorMessage('Kodeord skal være det samme');
     }
     const emailRegex = /[[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-    if (!emailRegex.test(user.email)) {
+    if (!emailRegex.test(email)) {
       return setErrorMessage('Emailen er ikke en korrekt email');
     }
 
     try {
-      const { data: token } = await client.mutate({
-        mutation: CREATE_USER,
-        variables: {
-          username: user.username,
-          password: user.password,
-          email: user.email
-        }
-      });
-
-      setCookie('user', token.createUser);
-      await dispatch(login(token.createUser));
-      history.push('/registered');
+      setRegisterLoading(true);
+      await User.createUser({ username, password, email });
+      setRegistered(true);
     } catch (err) {
+      setRegisterLoading(false);
       if (err.message.includes('ER_DUP_ENTRY'))
         setErrorMessage('Brugernavn eller email er allerede registreret');
     }
   };
 
+  if (registered) return <Registered />;
   return (
     <div
       style={{
@@ -69,47 +49,62 @@ const Register: React.FC<RegisterProps> = ({ history }) => {
     >
       <Segment textAlign="center" style={{ width: '400px' }}>
         <h1>Register</h1>
-        <Form onSubmit={handleRegister}>
-          <Form.Input
-            required
-            onChange={(e, { name, value }) => handleChange(name, value)}
-            value={user.username}
-            icon="user"
-            iconPosition="left"
-            placeholder="Brugernavn"
-            name="username"
-          />
-          <Form.Input
-            required
-            onChange={(e, { name, value }) => handleChange(name, value)}
-            name="email"
-            icon="at"
-            iconPosition="left"
-            placeholder="Email"
-          />
-          <Form.Input
-            required
-            onChange={(e, { name, value }) => handleChange(name, value)}
-            name="password"
-            type="password"
-            icon="key"
-            iconPosition="left"
-            placeholder="Kodeord"
-          />
-          <Form.Input
-            required
-            onChange={(e, { name, value }) => handleChange(name, value)}
-            icon="key"
-            iconPosition="left"
-            placeholder="Gentag Kodeord"
-            name="repeatPassword"
-            type="password"
-          />
-          <Form.Button color="green" type="submit">
-            Register
-          </Form.Button>
-          {errorMessage && <Message color="red">{errorMessage}</Message>}
-        </Form>
+        <Formik
+          initialValues={{
+            username: '',
+            email: '',
+            password: '',
+            repeatPassword: ''
+          }}
+          onSubmit={(values) => handleRegister(values)}
+        >
+          {({ handleChange, values, handleSubmit }) => (
+            <Form onSubmit={handleSubmit}>
+              <Form.Input
+                name="username"
+                required
+                onChange={handleChange}
+                value={values.username}
+                icon="user"
+                iconPosition="left"
+                placeholder="Brugernavn"
+              />
+              <Form.Input
+                name="email"
+                value={values.email}
+                onChange={handleChange}
+                required
+                icon="at"
+                iconPosition="left"
+                placeholder="Email"
+              />
+              <Form.Input
+                name="password"
+                value={values.password}
+                onChange={handleChange}
+                required
+                type="password"
+                icon="key"
+                iconPosition="left"
+                placeholder="Kodeord"
+              />
+              <Form.Input
+                name="repeatPassword"
+                onChange={handleChange}
+                value={values.repeatPassword}
+                required
+                icon="key"
+                iconPosition="left"
+                placeholder="Gentag Kodeord"
+                type="password"
+              />
+              <Form.Button loading={registerLoading} disabled={registerLoading} color="green">
+                Register
+              </Form.Button>
+            </Form>
+          )}
+        </Formik>
+        {errorMessage && <Message color="red">{errorMessage}</Message>}
       </Segment>
     </div>
   );

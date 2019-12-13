@@ -1,50 +1,30 @@
 import React, { useState } from 'react';
 import { Segment, Form, Divider, Message } from 'semantic-ui-react';
 import { RouteComponentProps } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
-import { useDispatch } from 'react-redux';
-import { LOGIN } from 'queries/auth';
-import { login } from 'redux/actions/auth';
-import { client } from 'apolloClient';
-import { User } from 'types/auth';
+import { Formik, FormikValues } from 'formik';
+import User from 'classes/User';
+import { Button } from 'semantic-ui-react';
 
 export interface LoginProps extends RouteComponentProps<any> {}
 
 const Login: React.FC<LoginProps> = ({ history }) => {
-  const [, setCookie] = useCookies(['user']);
-  const dispatch = useDispatch();
-  const [user, setUser] = useState({
-    username: '',
-    password: '',
-    email: ''
-  });
   const [errorMessage, setErrorMessage] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
 
-  const handleLogin = async () => {
-    if (!user.username || !user.password) {
+  const handleLogin = async (values: FormikValues) => {
+    const { username, password, email } = values;
+    if (!username || !password) {
       return setErrorMessage('Please provide all fields');
     }
 
     try {
-      const { data: jwt } = await client.mutate({
-        mutation: LOGIN,
-        variables: {
-          username: user.username,
-          password: user.password,
-          email: user.email
-        }
-      });
-
-      setCookie('user', jwt.login);
-      await dispatch(login(jwt.login));
+      setLoginLoading(true);
+      await User.login({ username, password, email });
       history.push('/');
     } catch (err) {
+      setLoginLoading(false);
       return setErrorMessage('User not found');
     }
-  };
-
-  const handleChange = (name: keyof User, value: string) => {
-    setUser((prevUser) => ({ ...prevUser, [name]: value }));
   };
 
   return (
@@ -57,34 +37,51 @@ const Login: React.FC<LoginProps> = ({ history }) => {
       }}
     >
       <Segment style={{ width: '400px' }} textAlign="center">
-        <Form onSubmit={handleLogin}>
-          <Form.Input
-            required
-            icon="user"
-            iconPosition="left"
-            placeholder="Brugernavn"
-            name="username"
-            value={user.username}
-            onChange={(e, { name, value }) => handleChange(name, value)}
-          />
-          <Form.Input
-            required
-            icon="key"
-            iconPosition="left"
-            placeholder="Password"
-            type="password"
-            name="password"
-            value={user.password}
-            onChange={(e, { name, value }) => handleChange(name, value)}
-          />
-          <Form.Button type="submit" fluid color="blue">
-            Login
-          </Form.Button>
-          <Divider hidden />
-          <Form.Button onClick={() => history.push('/register')} size="small" basic>
-            Register
-          </Form.Button>
-        </Form>
+        <Formik
+          onSubmit={(values) => handleLogin(values)}
+          initialValues={{
+            username: '',
+            password: '',
+            email: ''
+          }}
+        >
+          {({ values, handleChange, handleSubmit }) => (
+            <Form onSubmit={() => handleSubmit()}>
+              <Form.Input
+                name="username"
+                value={values.username}
+                onChange={(e) => handleChange(e)}
+                required
+                icon="user"
+                iconPosition="left"
+                placeholder="Brugernavn"
+              />
+              <Form.Input
+                name="password"
+                value={values.password}
+                onChange={(e) => handleChange(e)}
+                required
+                icon="key"
+                iconPosition="left"
+                type="password"
+                placeholder="Password"
+              />
+              <Form.Button
+                loading={loginLoading}
+                disabled={loginLoading}
+                type="submit"
+                fluid
+                color="blue"
+              >
+                Login
+              </Form.Button>
+              <Divider hidden />
+            </Form>
+          )}
+        </Formik>
+        <Button size="small" basic>
+          Register
+        </Button>
         {errorMessage && <Message color="red">{errorMessage}</Message>}
       </Segment>
     </div>
