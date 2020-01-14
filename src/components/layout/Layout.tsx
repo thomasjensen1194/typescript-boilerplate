@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
-import styled from 'styled-components';
+import { MainLayout } from 'styles/layout';
 
 export interface LayoutProps {}
 
@@ -18,12 +18,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [window.innerWidth]);
 
-  const MainLayout = styled.div`
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  `;
-
   if (windowSize > 400)
     return (
       <MainLayout>
@@ -33,7 +27,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Footer />
       </MainLayout>
     );
-  return <Sidebar>{children}</Sidebar>;
+  return (
+    <Sidebar>
+      {children} <div style={{ flexGrow: 1 }} />
+      <Footer />
+    </Sidebar>
+  );
 };
 
 export default Layout;

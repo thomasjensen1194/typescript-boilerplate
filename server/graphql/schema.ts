@@ -1,5 +1,4 @@
 import { gql } from 'apollo-server-express';
-import { merge } from 'lodash';
 import { typeDefs as User, resolvers as UserResolvers } from './types/user';
 
 const Query = gql`
@@ -14,4 +13,4 @@ const Query = gql`
 const rootResolver = {};
 
 export const typeDefs = [Query, User];
-export const resolvers = merge(rootResolver, UserResolvers);
+export const resolvers = [rootResolver, UserResolvers];

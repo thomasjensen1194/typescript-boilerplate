@@ -2,7 +2,6 @@ import Apollo from './Apollo';
 import { gql } from 'apollo-boost';
 import { store } from 'index';
 import authReducer from 'redux/reducers/auth';
-import jwtDecode from 'jwt-decode';
 
 interface User {
   id: string;
@@ -17,8 +16,22 @@ interface UserInput {
 }
 
 class User {
-  static decode = (token: string): User => {
-    return jwtDecode(token);
+  /**
+   * Fetches the user object based on the stored cookie. Cookie can be placed by login or user creation.
+   */
+  static fetch = async () => {
+    const query = gql`
+      query {
+        user {
+          id
+          username
+          email
+        }
+      }
+    `;
+
+    const user = await Apollo.query<User>('user', query);
+    store.dispatch(authReducer.actions.login(user));
   };
 
   /**
@@ -31,9 +44,8 @@ class User {
       }
     `;
 
-    const token = await Apollo.mutate<string>('login', mutation, { data }); // JWT-Token
-    const user = User.decode(token);
-    await store.dispatch(authReducer.actions.login(user));
+    await Apollo.mutate<string>('login', mutation, { data }); // JWT-Token
+    await User.fetch();
   };
 
   /**
@@ -41,14 +53,12 @@ class User {
    */
   static createUser = async (data: UserInput) => {
     const mutation = gql`
-      mutation createUser($data: UserInput) {
+      mutation($data: UserInput) {
         createUser(data: $data)
       }
     `;
-    const token = await Apollo.mutate<string>('createUser', mutation, { data }); // JWT-Token
-    const user = User.decode(token);
-
-    await store.dispatch(authReducer.actions.login(user));
+    await Apollo.mutate<string>('createUser', mutation, { data }); // JWT-Token
+    await User.fetch();
   };
 
   /**
@@ -62,7 +72,7 @@ class User {
     `;
 
     await Apollo.mutate<string>('logout', mutation);
-    await store.dispatch(authReducer.actions.logout());
+    store.dispatch(authReducer.actions.logout());
   };
 }
 

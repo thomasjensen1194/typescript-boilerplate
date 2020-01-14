@@ -1,42 +1,32 @@
-import React, { useEffect } from 'react';
-import { Switch, Route, withRouter, RouteComponentProps } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Switch, Route } from 'react-router-dom';
 import Login from './components/auth/Login';
 import Frontpage from './components/Frontpage';
 import Register from './components/auth/Register';
-import { useCookies } from 'react-cookie';
-import { useSelector, useDispatch } from 'react-redux';
 import Logout from './components/auth/Logout';
 import Layout from 'components/layout/Layout';
-import './App.scss';
 import User from 'classes/User';
-import authReducer from 'redux/reducers/auth';
-import { ReduxState } from 'redux/reducers';
+import './App.scss';
 
-export interface AppProps extends RouteComponentProps<any> {
-  user?: object;
-}
+export interface AppProps {}
 
-const App: React.FC<AppProps> = ({ history, location }) => {
-  const user = useSelector((state: ReduxState) => state.auth.user);
-  const dispatch = useDispatch();
-  const [cookies] = useCookies(['user']);
+const App: React.FC<AppProps> = () => {
+  const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
-    if (location.pathname === '/register') return;
-    if (!user) {
-      if (cookies.user) {
-        const user = User.decode(cookies.user);
-        dispatch(authReducer.actions.login(user));
-      } else {
-        history.push('/login');
-      }
-    }
+    const fetchUser = async () => {
+      await User.fetch();
+      setFetching(false);
+    };
+
+    fetchUser();
   }, []);
 
   return (
     <div>
       <Layout>
         <Switch>
+          {fetching && <p>Loading...</p>}
           <Route path="/register" component={Register} />
           <Route path="/logout" component={Logout} />
           <Route path="/login" component={Login} />
@@ -47,4 +37,4 @@ const App: React.FC<AppProps> = ({ history, location }) => {
   );
 };
 
-export default withRouter(App);
+export default App;

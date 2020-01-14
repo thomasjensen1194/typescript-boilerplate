@@ -10,7 +10,11 @@ const getUserFromCookie = (req: Express.Request) => {
   const token = req.cookies?.user;
 
   if (token) {
-    return jwt.verify(token, secret) as User;
+    try {
+      return jwt.verify(token, secret) as User;
+    } catch (error) {
+      return null;
+    }
   }
 
   // If no user is logged in, user is null
@@ -20,7 +24,8 @@ const getUserFromCookie = (req: Express.Request) => {
 const generateContext = (req: Express.Request, res: Express.Response) => ({
   ...generateLoaders(),
   user: getUserFromCookie(req),
-  res
+  res,
+  req
 });
 
 export type Context = ReturnType<typeof generateContext>;

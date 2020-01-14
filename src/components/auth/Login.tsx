@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Segment, Form, Divider, Message } from 'semantic-ui-react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Formik, FormikValues } from 'formik';
 import User from 'classes/User';
 import { Button } from 'semantic-ui-react';
 
-export interface LoginProps extends RouteComponentProps<any> {}
+export interface LoginProps {}
 
-const Login: React.FC<LoginProps> = ({ history }) => {
+const Login: React.FC<LoginProps> = () => {
+  const history = useHistory();
   const [errorMessage, setErrorMessage] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
@@ -79,7 +80,7 @@ const Login: React.FC<LoginProps> = ({ history }) => {
             </Form>
           )}
         </Formik>
-        <Button size="small" basic>
+        <Button size="small" basic onClick={() => history.push('/register')}>
           Register
         </Button>
         {errorMessage && <Message color="red">{errorMessage}</Message>}

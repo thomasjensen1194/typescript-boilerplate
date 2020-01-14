@@ -4,7 +4,7 @@ import { Context } from 'config/apolloServer';
 
 export const typeDefs = gql`
   extend type Query {
-    me: User
+    user: User
   }
 
   extend type Mutation {
@@ -28,11 +28,11 @@ export const typeDefs = gql`
 
 export const resolvers = {
   Query: {
-    me: (obj, args, ctx: Context, info) => {
-      const user = ctx.user;
-      if (!user) return null;
+    user: async (obj, args, ctx: Context, info) => {
+      if (!ctx.user) return null;
 
-      return User.query().findById(user.userId);
+      const user = await User.query().findById(ctx.user.userId);
+      return { id: user?.userId };
     }
   },
 
@@ -42,12 +42,13 @@ export const resolvers = {
 
       const token = newUser.signToken();
       ctx.res.cookie('user', token);
-      return token;
+      return 'Created user and signed in';
     },
     login: async (obj, { data }, ctx: Context, info) => {
       const { username, password, email } = data;
-      if (!password || (!username && !email))
+      if (!password || (!username && !email)) {
         throw new Error('You must provide username/email and password');
+      }
 
       const user = await User.login(username, email);
       const isValid = await user.verify(password);
@@ -55,7 +56,7 @@ export const resolvers = {
       if (isValid) {
         const token = user.signToken();
         ctx.res.cookie('user', token);
-        return token;
+        return 'Signed in';
       } else {
         throw new Error('Incorrect username or password');
       }
