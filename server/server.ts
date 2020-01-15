@@ -1,14 +1,17 @@
+/* eslint-disable */
 import dotenv from 'dotenv-flow';
 dotenv.config({ default_node_env: 'development' });
 import express from 'express';
 import apollo from 'config/apolloServer';
 import helmet from 'helmet';
 import path from 'path';
+import cookieParser from 'cookie-parser';
 import './config/objection';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(helmet());
+app.use(cookieParser());
 apollo.applyMiddleware({ app });
 
 // Serve index.js
