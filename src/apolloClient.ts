@@ -1,5 +1,14 @@
-import ApolloClient from "apollo-boost";
+import ApolloClient from 'apollo-boost';
 
-export const client = new ApolloClient({
-  uri: "/graphql"
+const client = new ApolloClient({
+  uri: '/graphql',
+  credentials: 'include'
 });
+
+client.defaultOptions = {
+  query: {
+    fetchPolicy: 'network-only'
+  }
+};
+
+export default client;
