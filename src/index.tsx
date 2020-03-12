@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { client as apolloClient } from './apolloClient';
+import apolloClient from './apolloClient';
 import { ApolloProvider } from '@apollo/react-hooks';
 import rootReducer from 'redux/reducers';
 import App from './App';

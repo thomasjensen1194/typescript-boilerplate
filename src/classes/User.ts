@@ -2,18 +2,9 @@ import Apollo from './Apollo';
 import { gql } from 'apollo-boost';
 import { store } from 'index';
 import authReducer from 'redux/reducers/auth';
+import { User as UserType, UserInput } from 'types/generated';
 
-interface User {
-  id: string;
-  username: string;
-  email: string;
-}
-
-interface UserInput {
-  username: string;
-  password: string;
-  email: string;
-}
+interface User extends UserType {}
 
 class User {
   /**

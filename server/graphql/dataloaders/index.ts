@@ -1,3 +1,3 @@
-import * as userLoaders from './userLoaders';
+import { generateUserLoader } from './userLoaders';
 
-export const generateLoaders = () => ({ ...userLoaders });
+export const generateLoaders = () => ({ userLoader: generateUserLoader() });

@@ -6,13 +6,14 @@ import Express from 'express';
 import User from 'models/userModel';
 const secret = process.env.SECRET || '';
 
-const getUserFromCookie = (req: Express.Request) => {
+const getUserFromCookie = (req: Express.Request, res: Express.Response) => {
   const token = req.cookies?.user;
 
   if (token) {
     try {
       return jwt.verify(token, secret) as User;
     } catch (error) {
+      res.cookie('user', {}, { expires: new Date(0) });
       return null;
     }
   }
@@ -23,7 +24,7 @@ const getUserFromCookie = (req: Express.Request) => {
 
 const generateContext = (req: Express.Request, res: Express.Response) => ({
   ...generateLoaders(),
-  user: getUserFromCookie(req),
+  user: getUserFromCookie(req, res),
   res,
   req
 });

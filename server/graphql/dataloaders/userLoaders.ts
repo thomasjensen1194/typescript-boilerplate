@@ -6,4 +6,4 @@ const batchUsers = async (ids: number[]) => {
   return ids.map((id) => users.find((user) => user.userId === id));
 };
 
-export const userLoader = new DataLoader((ids: number[]) => batchUsers(ids));
+export const generateUserLoader = () => new DataLoader((ids: number[]) => batchUsers(ids));
